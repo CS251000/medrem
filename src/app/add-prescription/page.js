@@ -5,17 +5,17 @@ import { useAuth, useUser } from "@clerk/nextjs";
 import { db } from "@/lib/firebase"; // Ensure Firebase is correctly configured
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useRouter } from "next/navigation";
-import { Dialog, DialogPanel } from '@headlessui/react'
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
-import Image from 'next/image'
-import Link from 'next/link'
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
+import { Dialog, DialogPanel } from "@headlessui/react";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import Image from "next/image";
+import Link from "next/link";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { navigation } from "@/lib/constants";
 
 export default function AddPrescription() {
   const { userId } = useAuth();
-  const { user,isSignedIn } = useUser();
-  const router= useRouter();
+  const { user, isSignedIn } = useUser();
+  const router = useRouter();
 
   const [medicines, setMedicines] = useState([]);
   const [medicineName, setMedicineName] = useState("");
@@ -30,7 +30,7 @@ export default function AddPrescription() {
   const [doctorName, setDoctorName] = useState("");
   const [doctorContact, setDoctorContact] = useState("");
   const [loading, setLoading] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleDay = (day) => {
     setDays((prevDays) =>
@@ -45,7 +45,7 @@ export default function AddPrescription() {
       <div className="flex items-center justify-center h-screen">
         <p className="text-xl font-semibold">
           Please sign in to add prescriptions.
-          <SignInButton/>
+          <SignInButton />
         </p>
       </div>
     );
@@ -62,8 +62,10 @@ export default function AddPrescription() {
       !startDate ||
       !endDate ||
       !instructions
-    )
+    ) {
+      alert("Please fill all the required fields for medicine.");
       return;
+    }
 
     setMedicines([
       ...medicines,
@@ -90,6 +92,24 @@ export default function AddPrescription() {
     setInstructions("");
   };
 
+  const removeMedicine = (index) => {
+    setMedicines(medicines.filter((_, i) => i !== index));
+  };
+
+  const editMedicine = (index) => {
+    const med = medicines[index];
+    setMedicineName(med.medicineName);
+    setDosage(med.dosage);
+    setFrequency(med.frequency);
+    setTimeOfDay(med.timeOfDay);
+    setDuration(med.duration);
+    setDays(med.days);
+    setStartDate(med.startDate);
+    setEndDate(med.endDate);
+    setInstructions(med.instructions);
+    removeMedicine(index);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (medicines.length === 0) {
@@ -112,8 +132,7 @@ export default function AddPrescription() {
       setDoctorName("");
       setDoctorContact("");
       alert("Prescription added successfully!");
-      router.push(`pillbox/${userId}`)
-      
+      router.push(`/pillbox/${userId}`);
     } catch (error) {
       console.error("Error adding prescription:", error);
       alert("Error adding prescription.");
@@ -123,12 +142,15 @@ export default function AddPrescription() {
   };
 
   return (
-    <div className="flex flex-col pt-40">
+    <div className="pt-40">
       <header className="absolute inset-x-0 top-0 z-50">
-        <nav aria-label="Global" className="flex items-center justify-between p-6 lg:px-8">
+        <nav
+          aria-label="Global"
+          className="flex items-center justify-between p-6 lg:px-8"
+        >
           {/* desktop view */}
           <div className="flex lg:flex-1">
-            <Link href="#" className="-m-2 p-3 ">
+            <Link href="#" className="-m-2 p-3">
               <span className="sr-only">MedRem</span>
               <Image
                 alt="logo"
@@ -153,27 +175,33 @@ export default function AddPrescription() {
           {/* desktop */}
           <div className="hidden lg:flex lg:gap-x-12">
             {navigation.map((item) => (
-              <Link key={item.name} href={item.href} className="text-lg font-semibold text-gray-900">
+              <Link
+                key={item.name}
+                href={item.href}
+                className="text-lg font-semibold text-gray-900"
+              >
                 {item.name}
               </Link>
             ))}
-            
           </div>
           <div className="hidden lg:flex lg:flex-1 lg:justify-end mr-10">
             <div className="text-md font-semibold text-gray-900">
-            <SignedIn>
-                      <UserButton />
-                    </SignedIn>
-                    <SignedOut>
-                    <SignInButton/>
-                    </SignedOut>
-              
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
+              <SignedOut>
+                <SignInButton />
+              </SignedOut>
             </div>
           </div>
         </nav>
-        <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
+        <Dialog
+          open={mobileMenuOpen}
+          onClose={setMobileMenuOpen}
+          className="lg:hidden"
+        >
           <div className="fixed inset-0 z-50" />
-          <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-blue-100 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+          <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-blue-100 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
             <div className="flex items-center justify-between">
               <Link href="#" className="-m-1.5 p-1.5">
                 <span className="sr-only">Your Company</span>
@@ -182,7 +210,7 @@ export default function AddPrescription() {
                   src="/assets/images/logo.png"
                   height={100}
                   width={100}
-                  className='rounded-xl'
+                  className="rounded-xl"
                 />
               </Link>
               <button
@@ -208,148 +236,185 @@ export default function AddPrescription() {
                   ))}
                 </div>
                 <div className="py-6">
-                  <div
-                    className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
-                  >
+                  <div className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">
                     <SignedIn>
-                      <UserButton/>
+                      <UserButton />
                     </SignedIn>
                     <SignedOut>
-                    <SignInButton/>
+                      <SignInButton />
                     </SignedOut>
                   </div>
                 </div>
               </div>
             </div>
-          </DialogPanel>
+          </Dialog.Panel>
         </Dialog>
       </header>
       <div
-          aria-hidden="true"
-          className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
-        >
-          <div
-            style={{
-              clipPath:
-                'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
-            }}
-           className="relative left-[calc(50%-11rem)] w-[36.125rem] h-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#b2dbff] to-[#4a89e6] opacity-90"
-          />
-        </div>
-    <div className="max-w-lg mx-auto p-6 mt-10  shadow-lg rounded-lg border border-gray-200">
-      <h2 className="text-2xl font-bold mb-4 text-center text-gray-700">
-        Create Your Prescription
-      </h2>
-
-      <div className="space-y-3">
-        <input
-          type="text"
-          placeholder="Doctor's Name"
-          value={doctorName}
-          onChange={(e) => setDoctorName(e.target.value)}
-          className="w-full p-2 border rounded"
-        />
-        <input
-          type="text"
-          placeholder="Doctor's Contact"
-          value={doctorContact}
-          onChange={(e) => setDoctorContact(e.target.value)}
-          className="w-full p-2 border rounded"
-        />
-        <input
-          type="text"
-          placeholder="Medicine Name *"
-          value={medicineName}
-          onChange={(e) => setMedicineName(e.target.value)}
-          className="w-full p-2 border rounded"
-        />
-        <input
-          type="text"
-          placeholder="Dosage (e.g., 500mg) *"
-          value={dosage}
-          onChange={(e) => setDosage(e.target.value)}
-          className="w-full p-2 border rounded"
-        />
-        <input
-          type="text"
-          placeholder="Frequency (e.g., 2 times/day) *"
-          value={frequency}
-          onChange={(e) => setFrequency(e.target.value)}
-          className="w-full p-2 border rounded"
-        />
-        <div className="w-full p-2 border rounded bg-gray-100">
-          <p className="font-semibold mb-2">Time *</p>
-          {["Morning", "Noon", "Night"].map((day) => (
-            <label key={day} className="inline-flex items-center mr-2">
-              <input
-                type="checkbox"
-                checked={days.includes(day)}
-                onChange={() => toggleDay(day)}
-                className="mr-1"
-              />
-              {day}
-            </label>
-          ))}
-        </div>
-        <input
-          type="text"
-          placeholder="Duration (e.g., 10 days) *"
-          value={duration}
-          onChange={(e) => setDuration(e.target.value)}
-          className="w-full p-2 border rounded"
-        />
-        <div className="w-full p-2 border rounded bg-gray-100">
-          <p className="font-semibold mb-2">Days *</p>
-          {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
-            <label key={day} className="inline-flex items-center mr-2">
-              <input
-                type="checkbox"
-                checked={days.includes(day)}
-                onChange={() => toggleDay(day)}
-                className="mr-1"
-              />
-              {day}
-            </label>
-          ))}
-        </div>
-        <input
-          type="date"
-          placeholder="Start Date *"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          className="w-full p-2 border rounded"
-        />
-        <input
-          type="date"
-          placeholder="End Date *"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-          className="w-full p-2 border rounded"
-        />
-        <textarea
-          placeholder="Special Instructions"
-          value={instructions}
-          onChange={(e) => setInstructions(e.target.value)}
-          className="w-full p-2 border rounded"
-        />
-        <button
-          type="button"
-          onClick={addMedicine}
-          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-        >
-          Add Medicine
-        </button>
-      </div>
-      <button
-        onClick={handleSubmit}
-        disabled={loading}
-        className={`w-full mt-4 p-2 text-white rounded ${
-          loading ? "bg-gray-400" : "bg-green-500 hover:bg-green-600"
-        }`}
+        aria-hidden="true"
+        className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
       >
-        {loading ? "Saving..." : "Save Prescription"}
-      </button>
-    </div>
+        <div
+          style={{
+            clipPath:
+              "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
+          }}
+          className="relative left-[calc(50%-11rem)] w-[36.125rem] h-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#b2dbff] to-[#4a89e6] opacity-90"
+        />
+      </div>
+      <div className="flex flex-col md:flex-row items-start pt-10 px-4 md:px-0">
+        {/* Form Container */}
+        <div className="flex-1">
+          <div className="max-w-lg mx-auto p-6 shadow-lg rounded-lg border border-gray-200">
+            <h2 className="text-2xl font-bold mb-4 text-center text-gray-700">
+              Create Your Prescription
+            </h2>
+            <div className="space-y-3">
+              <input
+                type="text"
+                placeholder="Doctor's Name"
+                value={doctorName}
+                onChange={(e) => setDoctorName(e.target.value)}
+                className="w-full p-2 border rounded"
+              />
+              <input
+                type="text"
+                placeholder="Doctor's Contact"
+                value={doctorContact}
+                onChange={(e) => setDoctorContact(e.target.value)}
+                className="w-full p-2 border rounded"
+              />
+              <input
+                type="text"
+                placeholder="Medicine Name *"
+                value={medicineName}
+                onChange={(e) => setMedicineName(e.target.value)}
+                className="w-full p-2 border rounded"
+              />
+              <input
+                type="text"
+                placeholder="Dosage (e.g., 500mg) *"
+                value={dosage}
+                onChange={(e) => setDosage(e.target.value)}
+                className="w-full p-2 border rounded"
+              />
+              <input
+                type="text"
+                placeholder="Frequency (e.g., 2 times/day) *"
+                value={frequency}
+                onChange={(e) => setFrequency(e.target.value)}
+                className="w-full p-2 border rounded"
+              />
+              <div className="w-full p-2 border rounded bg-gray-100">
+                <p className="font-semibold mb-2">Time *</p>
+                {["Morning", "Noon", "Night"].map((day) => (
+                  <label key={day} className="inline-flex items-center mr-2">
+                    <input
+                      type="checkbox"
+                      checked={days.includes(day)}
+                      onChange={() => toggleDay(day)}
+                      className="mr-1"
+                    />
+                    {day}
+                  </label>
+                ))}
+              </div>
+              <input
+                type="text"
+                placeholder="Duration (e.g., 10 days) *"
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
+                className="w-full p-2 border rounded"
+              />
+              <div className="w-full p-2 border rounded bg-gray-100">
+                <p className="font-semibold mb-2">Days *</p>
+                {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
+                  (day) => (
+                    <label key={day} className="inline-flex items-center mr-2">
+                      <input
+                        type="checkbox"
+                        checked={days.includes(day)}
+                        onChange={() => toggleDay(day)}
+                        className="mr-1"
+                      />
+                      {day}
+                    </label>
+                  )
+                )}
+              </div>
+              <input
+                type="date"
+                placeholder="Start Date *"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full p-2 border rounded"
+              />
+              <input
+                type="date"
+                placeholder="End Date *"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-full p-2 border rounded"
+              />
+              <textarea
+                placeholder="Special Instructions"
+                value={instructions}
+                onChange={(e) => setInstructions(e.target.value)}
+                className="w-full p-2 border rounded"
+              />
+              <button
+                type="button"
+                onClick={addMedicine}
+                className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+              >
+                Add Medicine
+              </button>
+            </div>
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className={`w-full mt-4 p-2 text-white rounded ${
+                loading ? "bg-gray-400" : "bg-green-500 hover:bg-green-600"
+              }`}
+            >
+              {loading ? "Saving..." : "Save Prescription"}
+            </button>
+          </div>
+        </div>
+        {/* Medicine Stack Display */}
+        <div className="w-full md:w-64 mt-6 md:mt-10 mx-auto">
+          <div className="bg-white p-4 shadow-lg rounded-lg border border-gray-200">
+            <h3 className="text-lg font-semibold mb-2">Added Medicines</h3>
+            <ul>
+              {medicines.map((med, index) => (
+                <li
+                  key={index}
+                  className="border-b py-1 flex justify-between items-center"
+                >
+                  <div>
+                    <span className="font-bold">{med.medicineName}</span> (
+                    {med.dosage})
+                  </div>
+                  <div>
+                    <button
+                      onClick={() => editMedicine(index)}
+                      className="text-blue-500 mr-2"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => removeMedicine(index)}
+                      className="text-red-500"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
