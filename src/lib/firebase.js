@@ -14,10 +14,10 @@ const firebaseConfig = {
   storageBucket: "medrem-fbcb0.firebasestorage.app",
   messagingSenderId: "954226199500",
   appId: "1:954226199500:web:6c134554da50db66dd6b69",
-  measurementId: "G-XW9DFRX8H7"
+  measurementId: "G-XW9DFRX8H7",
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-export const db= getFirestore(app);
-const analytics = getAnalytics(app);
+export const db = getFirestore(app);
+// const analytics = getAnalytics(app);
