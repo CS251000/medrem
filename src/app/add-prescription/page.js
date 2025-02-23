@@ -150,7 +150,7 @@ export default function AddPrescription() {
         >
           {/* desktop view */}
           <div className="flex lg:flex-1">
-            <Link href="#" className="-m-2 p-3">
+            <Link href="/" className="-m-2 p-3">
               <span className="sr-only">MedRem</span>
               <Image
                 alt="logo"
@@ -262,6 +262,7 @@ export default function AddPrescription() {
           className="relative left-[calc(50%-11rem)] w-[36.125rem] h-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#b2dbff] to-[#4a89e6] opacity-90"
         />
       </div>
+      
       <div className="flex flex-col md:flex-row items-start pt-10 px-4 md:px-0">
         {/* Form Container */}
         <div className="flex-1">
