@@ -10,8 +10,9 @@ export const days=[
   "Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"
 ]
 export const timePeriod=[
-  "🌅 Morning","☀️ Afternoon","🌆 Evening","🌙 Night"
+  "Morning","Noon","Night"
 ]
+
 
 export const healthLoveSlogans = [
   "💖 Health is the greatest wealth—love yourself, stay well! 🌿",
@@ -25,3 +26,12 @@ export const healthLoveSlogans = [
   "🏋️‍♂️ Stay fit, stay strong, spread love all along! 💞",
   "🍊 Nourish your body, embrace love, live joyfully! 😊"
 ];
+export const dayAbbreviations= {
+  Monday: "Mon",
+  Tuesday: "Tue",
+  Wednesday: "Wed",
+  Thursday: "Thu",
+  Friday: "Fri",
+  Saturday: "Sat",
+  Sunday: "Sun",
+};

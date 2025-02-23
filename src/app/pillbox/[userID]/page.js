@@ -13,6 +13,7 @@ import {
   useAuth,
   UserButton,
 } from "@clerk/nextjs";
+import { dayAbbreviations } from "@/lib/constants";
 import { navigation, days } from "@/lib/constants";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { db } from "@/lib/firebase";
@@ -33,7 +34,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
 import { timePeriod } from "@/lib/constants";
 
@@ -47,7 +48,8 @@ import {
 } from "@/components/ui/card";
 
 const todayIndex = new Date().getDay();
-const randomSlogan = healthLoveSlogans[Math.floor(Math.random() * healthLoveSlogans.length)];
+const randomSlogan =
+  healthLoveSlogans[Math.floor(Math.random() * healthLoveSlogans.length)];
 const getTimeOfDayIndex = () => {
   const hours = new Date().getHours();
   if (hours >= 5 && hours < 12) return 0; // Morning
@@ -118,6 +120,7 @@ export default function PillBox() {
   if (loading) {
     return <p>Loading medicines...</p>;
   }
+  console.log("meds", medicines);
 
   return (
     <div className="flex flex-col pt-40 px-4 sm:px-8">
@@ -274,9 +277,9 @@ export default function PillBox() {
             <TabsContent
               key={day.toLowerCase()}
               value={day.toLowerCase()}
-              className="flex flex-col justify-center items-center bg-slate-200 mt-16 rounded-xl w-80 lg:w-fit mx-auto"
+              className="flex flex-col justify-center items-center bg-slate-200 mt-16 rounded-xl w-fit mx-auto"
             >
-              <Card className="m-2 w-72 lg:w-full max-w-md">
+              <Card className="mx-2 my-2 w-80 lg:w-full max-w-md ">
                 <CardHeader>
                   <CardTitle>{day}'s Medicine Schedule</CardTitle>
                 </CardHeader>
@@ -289,30 +292,48 @@ export default function PillBox() {
                     <CarouselContent>
                       {timePeriod.map((time, index) => (
                         <CarouselItem key={index} className="text-center mx-10">
-                          <h2 className="bg-blue-400 rounded-2xl w-36 mx-auto p-1 ">{time}</h2>
-                          <Table className="overflow-x-scroll">
-                            <TableCaption>
+                          <h2 className="bg-blue-400 rounded-2xl w-36 mx-auto p-1 ">
+                            {time}
+                          </h2>
+                          <Table className="overflow-x-scroll text-center">
+                            <TableCaption className="text-center">
                               {randomSlogan}
                             </TableCaption>
                             <TableHeader>
                               <TableRow>
-                                <TableHead className="w-[100px]">
+                                <TableHead className="text-center">
                                   Tablet/Syrup
                                 </TableHead>
-                                <TableHead>dose</TableHead>
-                                <TableHead>instruction</TableHead>
-                      
+                                <TableHead className="text-center">
+                                  Dosage
+                                </TableHead>
+                                <TableHead className="text-center">
+                                  Instruction
+                                </TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
-                              <TableRow>
-                                <TableCell className="font-medium">
-                                  INV001
-                                </TableCell>
-                                <TableCell>Paid</TableCell>
-                                <TableCell>Credit Card</TableCell>
+                              {medicines
+                                .filter(
+                                  (medicine) =>
+                                    medicine.days.includes(dayAbbreviations[day])&&
+                                  medicine.timeOfDay.includes(time)
+                                    
+                                )
                                 
-                              </TableRow>
+                                .map((medicine, index) => (
+                                  <TableRow key={index} className="text-center">
+                                    <TableCell className="font-medium text-center">
+                                      {medicine.medicineName}
+                                    </TableCell>
+                                    <TableCell className="text-center">
+                                      {medicine.dosage}
+                                    </TableCell>
+                                    <TableCell className="text-center">
+                                      {medicine.instructions}
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
                             </TableBody>
                           </Table>
                         </CarouselItem>
