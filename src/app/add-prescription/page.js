@@ -21,9 +21,9 @@ export default function AddPrescription() {
   const [medicineName, setMedicineName] = useState("");
   const [dosage, setDosage] = useState("");
   const [frequency, setFrequency] = useState("");
-  const [timeOfDay, setTimeOfDay] = useState("morning");
+  const [timeOfDayArr, setTimeOfDayArr] = useState([]); // NEW array for Morning/Noon/Night
+  const [days, setDays] = useState([]); // For Mon/Tue/Wed/...
   const [duration, setDuration] = useState("");
-  const [days, setDays] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [instructions, setInstructions] = useState("");
@@ -32,11 +32,19 @@ export default function AddPrescription() {
   const [loading, setLoading] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Toggle for days of the week
   const toggleDay = (day) => {
     setDays((prevDays) =>
       prevDays.includes(day)
         ? prevDays.filter((d) => d !== day)
         : [...prevDays, day]
+    );
+  };
+
+  // NEW: Toggle for time of day
+  const toggleTimeOfDay = (time) => {
+    setTimeOfDayArr((prev) =>
+      prev.includes(time) ? prev.filter((t) => t !== time) : [...prev, time]
     );
   };
 
@@ -56,9 +64,9 @@ export default function AddPrescription() {
       !medicineName ||
       !dosage ||
       !frequency ||
-      !timeOfDay ||
+      timeOfDayArr.length === 0 || // Must have at least one time of day
       !duration ||
-      days.length === 0 ||
+      days.length === 0 || // Must have at least one day of the week
       !startDate ||
       !endDate ||
       !instructions
@@ -73,20 +81,22 @@ export default function AddPrescription() {
         medicineName,
         dosage,
         frequency,
-        timeOfDay,
+        timeOfDay: timeOfDayArr, // store the time of day array
         duration,
-        days,
+        days, // store the days-of-week array
         startDate,
         endDate,
         instructions,
       },
     ]);
+
+    // Reset fields
     setMedicineName("");
     setDosage("");
     setFrequency("");
-    setTimeOfDay("morning");
+    setTimeOfDayArr([]); // clear timeOfDay array
     setDuration("");
-    setDays([]);
+    setDays([]); // clear days array
     setStartDate("");
     setEndDate("");
     setInstructions("");
@@ -101,9 +111,9 @@ export default function AddPrescription() {
     setMedicineName(med.medicineName);
     setDosage(med.dosage);
     setFrequency(med.frequency);
-    setTimeOfDay(med.timeOfDay);
+    setTimeOfDayArr(med.timeOfDay); // retrieve timeOfDay from object
     setDuration(med.duration);
-    setDays(med.days);
+    setDays(med.days); // retrieve days from object
     setStartDate(med.startDate);
     setEndDate(med.endDate);
     setInstructions(med.instructions);
@@ -311,8 +321,8 @@ export default function AddPrescription() {
                   <label key={day} className="inline-flex items-center mr-2">
                     <input
                       type="checkbox"
-                      checked={days.includes(day)}
-                      onChange={() => toggleDay(day)}
+                      checked={timeOfDayArr.includes(day)} // use timeOfDayArr
+                      onChange={() => toggleTimeOfDay(day)} // use toggleTimeOfDay
                       className="mr-1"
                     />
                     {day}
