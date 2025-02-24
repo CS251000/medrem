@@ -17,7 +17,7 @@ import { dayAbbreviations } from "@/lib/constants";
 import { navigation, days } from "@/lib/constants";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { db } from "@/lib/firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs,updateDoc } from "firebase/firestore";
 import {
   Carousel,
   CarouselContent,
@@ -117,10 +117,65 @@ export default function PillBox() {
     fetchMedicines();
   }, [userId]);
 
+
+  const handleMedicineTaken = async (medicine, day, time) => {
+    const updatedMedicines = medicines.map((med) => {
+      if (med.medicineName === medicine.medicineName) {
+        return {
+          ...med,
+          taken: {
+            ...med.taken,
+            [day]: {
+              ...med.taken?.[day],
+              [time]: !med.taken?.[day]?.[time],
+            },
+          },
+        };
+      }
+      return med;
+    });
+  
+    setMedicines(updatedMedicines);
+  
+    try {
+      const prescriptionsRef = collection(db, "prescriptions");
+      const q = query(
+        prescriptionsRef,
+        where("userId", "==", userId)
+      );
+      const querySnapshot = await getDocs(q);
+  
+      querySnapshot.forEach(async (doc) => {
+        const data = doc.data();
+        const updatedMedicineList = data.medicines.map((med) => {
+          if (med.medicineName === medicine.medicineName) {
+            return {
+              ...med,
+              taken: {
+                ...med.taken,
+                [day]: {
+                  ...med.taken?.[day],
+                  [time]: !med.taken?.[day]?.[time],
+                },
+              },
+            };
+          }
+          return med;
+        });
+  
+        await updateDoc(doc.ref, {
+          medicines: updatedMedicineList,
+        });
+      });
+    } catch (error) {
+      console.error("Error updating medicine status:", error);
+    }
+  };
+  
   if (loading) {
     return <p>Loading medicines...</p>;
   }
-  console.log("meds", medicines);
+
 
   return (
     <div className="flex flex-col pt-40 px-4 sm:px-8">
@@ -279,30 +334,38 @@ export default function PillBox() {
               value={day.toLowerCase()}
               className="flex flex-col justify-center items-center bg-slate-200 mt-16 rounded-xl w-fit mx-auto"
             >
-              <Card className="mx-2 my-2 w-80 lg:w-full max-w-md ">
+              <Card className="m-2  w-80 lg:w-full max-w-md ">
                 <CardHeader>
                   <CardTitle>{day}'s Medicine Schedule</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {/* Time-Based Medicine Carousel */}
                   <Carousel
-                    className="mt-4 w-full bg-blue-100 rounded-lg p-2"
-                    opts={{ loop: true, startIndex: currentTimeIndex }}
+                    className="mt-4 w-full bg-blue-100 rounded-lg pt-2 pb-2"
+                    opts={{ 
+                      loop: true,
+                       startIndex: currentTimeIndex,
+                       watchDrag:false,
+                    }}
+                    
                   >
                     <CarouselContent>
                       {timePeriod.map((time, index) => (
                         <CarouselItem key={index} className="text-center mx-10">
-                          <h2 className="bg-blue-400 rounded-2xl w-36 mx-auto p-1 ">
+                          <h2 className="bg-blue-400 rounded-2xl w-36 mx-auto ">
                             {time}
                           </h2>
-                          <Table className="overflow-x-scroll text-center">
+                          <Table className="overflow-x-scroll text-center text-wrap table-auto w-full">
                             <TableCaption className="text-center">
                               {randomSlogan}
                             </TableCaption>
-                            <TableHeader>
+                            <TableHeader className='text-wrap'>
                               <TableRow>
                                 <TableHead className="text-center">
-                                  Tablet/Syrup
+                                  Taken
+                                </TableHead>
+                                <TableHead className="text-center">
+                                  Medicine
                                 </TableHead>
                                 <TableHead className="text-center">
                                   Dosage
@@ -316,13 +379,42 @@ export default function PillBox() {
                               {medicines
                                 .filter(
                                   (medicine) =>
-                                    medicine.days.includes(dayAbbreviations[day])&&
-                                  medicine.timeOfDay.includes(time)
-                                    
+                                    medicine.days.includes(
+                                      dayAbbreviations[day]
+                                    ) && medicine.timeOfDay.includes(time)
                                 )
-                                
+
                                 .map((medicine, index) => (
-                                  <TableRow key={index} className="text-center">
+                                  
+                                  <TableRow
+                                    key={index}
+                                    className={`text-center ${
+                                      index % 2 == 0
+                                        ? "bg-blue-200"
+                                        : "bg-blue-300"
+                                    }`}
+                                  >
+                                    <TableCell className="text-center">
+                                      <input
+                                        type="checkbox"
+                                        disabled={(
+                                          day== days[todayIndex]&&
+                                          time == timePeriod[getTimeOfDayIndex()]
+                                        )?false:true}
+                                        checked={
+                                          medicine.taken?.[day]?.[time] || false
+                                          
+                                        }
+                                        onChange={() =>
+                                          handleMedicineTaken(
+                                            medicine,
+                                            day,
+                                            time
+                                          )
+                                        }
+                                        className="w-5 h-5 accent-blue-600"
+                                      />
+                                    </TableCell>
                                     <TableCell className="font-medium text-center">
                                       {medicine.medicineName}
                                     </TableCell>

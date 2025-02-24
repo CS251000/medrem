@@ -7,6 +7,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { SignedIn, SignedOut, SignInButton, UserButton, useUser,useAuth } from '@clerk/nextjs'
 import { navigation } from '@/lib/constants'
+import { Button } from '@/components/ui/button'
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -163,6 +164,7 @@ export default function Home() {
                 </SignInButton>
               )}
             </div>
+            
           </div>
         </div>
       </div>

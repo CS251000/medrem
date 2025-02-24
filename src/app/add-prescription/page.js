@@ -10,7 +10,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import { navigation } from "@/lib/constants";
+import { navigation, timePeriod } from "@/lib/constants";
 
 export default function AddPrescription() {
   const { userId } = useAuth();
@@ -149,6 +149,7 @@ export default function AddPrescription() {
     } finally {
       setLoading(false);
     }
+    
   };
 
   return (
@@ -160,7 +161,7 @@ export default function AddPrescription() {
         >
           {/* desktop view */}
           <div className="flex lg:flex-1">
-            <Link href="#" className="-m-2 p-3">
+            <Link href="/" className="-m-2 p-3">
               <span className="sr-only">MedRem</span>
               <Image
                 alt="logo"
@@ -317,7 +318,7 @@ export default function AddPrescription() {
               />
               <div className="w-full p-2 border rounded bg-gray-100">
                 <p className="font-semibold mb-2">Time *</p>
-                {["Morning", "Noon", "Night"].map((day) => (
+                {timePeriod.map((day) => (
                   <label key={day} className="inline-flex items-center mr-2">
                     <input
                       type="checkbox"

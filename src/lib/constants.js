@@ -10,7 +10,7 @@ export const days=[
   "Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"
 ]
 export const timePeriod=[
-  "Morning","Noon","Night"
+  "Morning","Noon","Evening","Night"
 ]
 
 
