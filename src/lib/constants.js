@@ -1,10 +1,9 @@
 
 
 export const navigation = [
-  { name: 'Product', href: '#' },
-  { name: 'Features', href: '#' },
-  { name: 'Marketplace', href: '#' },
-  { name: 'Company', href: '#' },
+  { name: 'Water Reminders', href: '#' },
+  { name: 'Saved Prescriptions', href: 'saved-prescriptions' },
+  { name: 'User Analysis', href: '/analysis' },
 ]
 export const days=[
   "Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"

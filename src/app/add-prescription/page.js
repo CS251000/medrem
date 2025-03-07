@@ -53,8 +53,8 @@ export default function AddPrescription() {
       <div className="flex items-center justify-center h-screen">
         <p className="text-xl font-semibold">
           Please sign in to add prescriptions.
-          <SignInButton />
         </p>
+        <div className="bg-blue-400"><SignInButton/></div>
       </div>
     );
   }
