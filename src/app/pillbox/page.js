@@ -123,13 +123,14 @@ export default function PillBox() {
       if (med.medicineName === medicine.medicineName) {
         return {
           ...med,
-          taken: {
-            ...med.taken,
+          takendates: {
+            ...med.takendates,
             [day]: {
-              ...med.taken?.[day],
-              [time]: !med.taken?.[day]?.[time],
+              ...med.takendates?.[day],
+              [time]: !med.takendates?.[day]?.[time],
             },
           },
+          
         };
       }
       return med;
@@ -149,13 +150,14 @@ export default function PillBox() {
         const data = doc.data();
         const updatedMedicineList = data.medicines.map((med) => {
           if (med.medicineName === medicine.medicineName) {
+            med.taken++;
             return {
               ...med,
-              taken: {
-                ...med.taken,
+              takendates: {
+                ...med.takendates,
                 [day]: {
-                  ...med.taken?.[day],
-                  [time]: !med.taken?.[day]?.[time],
+                  ...med.takendates?.[day],
+                  [time]: !med.takendates?.[day]?.[time],
                 },
               },
             };
@@ -402,7 +404,7 @@ export default function PillBox() {
                                           time == timePeriod[getTimeOfDayIndex()]
                                         )?false:true}
                                         checked={
-                                          medicine.taken?.[day]?.[time] || false
+                                          medicine.takendates?.[day]?.[time] || false
                                           
                                         }
                                         onChange={() =>

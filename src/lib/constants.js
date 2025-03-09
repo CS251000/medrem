@@ -2,8 +2,9 @@
 
 export const navigation = [
   { name: 'Water Reminders', href: '#' },
-  { name: 'Saved Prescriptions', href: 'saved-prescriptions' },
+  { name: 'Saved Prescriptions', href: '/saved-prescriptions' },
   { name: 'User Analysis', href: '/analysis' },
+  {name: 'Pillbox',href:`pillbox`}
 ]
 export const days=[
   "Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"
