@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { TrendingUp } from "lucide-react"
-import { LabelList, RadialBar, RadialBarChart, YAxis } from "recharts"
+import { TrendingUp } from "lucide-react";
+import { LabelList, RadialBar, RadialBarChart, YAxis,Tooltip } from "recharts";
 
 import {
   Card,
@@ -10,13 +10,13 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
+} from "@/components/ui/chart";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogPanel } from "@headlessui/react";
@@ -31,9 +31,24 @@ import {
   UserButton,
   useUser,
 } from "@clerk/nextjs";
-import { navigation } from "@/lib/constants"
+import { navigation } from "@/lib/constants";
 import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
+
+
+const CustomTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div className="custom-tooltip bg-white p-2 border rounded shadow">
+        <p className="text-sm font-medium">{data.name}</p>
+        <p className="text-xs text-gray-600">Completion: {data.ratio}</p>
+      </div>
+    );
+  }
+  return null;
+};
+
 
 export default function AnalysisPage() {
   const { userId } = useAuth();
@@ -54,20 +69,24 @@ export default function AnalysisPage() {
         const q = query(prescriptionsRef, where("userId", "==", userId));
         const querySnapshot = await getDocs(q);
 
-        let allMedicines = querySnapshot.docs.flatMap((doc) => doc.data().medicines || []);
+        let allMedicines = querySnapshot.docs.flatMap(
+          (doc) => doc.data().medicines || []
+        );
 
         setMedicines(allMedicines);
 
         const formattedChartData = allMedicines.map((med, index) => ({
           name: med.medicineName || `Medicine ${index + 1}`,
-          adherence: (med.taken/med.total)*100,
+          adherence: (med.taken / med.total) * 100,
+          ratio: `${med.taken}/${med.total}`,
           fill: `hsl(${Math.random() * 360}, 70%, 50%)`, // Generate random colors
         }));
-        
-        
 
         const formattedChartConfig = Object.fromEntries(
-          formattedChartData.map((med) => [med.name, { label: med.name, color: med.fill }])
+          formattedChartData.map((med) => [
+            med.name,
+            { label: med.name, color: med.fill },
+          ])
         );
 
         const updatedChartData = [
@@ -75,10 +94,11 @@ export default function AnalysisPage() {
           {
             name: "",
             adherence: 100,
+            // ratio: "1/1",
             fill: "#fff", // White color for reference goal
           },
         ];
-  
+
         setChartData(updatedChartData);
         setChartConfig(formattedChartConfig);
       } catch (error) {
@@ -129,7 +149,11 @@ export default function AnalysisPage() {
           {/* Desktop Navigation */}
           <div className="hidden lg:flex lg:gap-x-12">
             {navigation.map((item) => (
-              <Link key={item.name} href={item.href} className="text-lg font-semibold text-gray-900">
+              <Link
+                key={item.name}
+                href={item.href}
+                className="text-lg font-semibold text-gray-900"
+              >
                 {item.name}
               </Link>
             ))}
@@ -146,7 +170,11 @@ export default function AnalysisPage() {
         </nav>
 
         {/* Mobile Navigation */}
-        <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
+        <Dialog
+          open={mobileMenuOpen}
+          onClose={setMobileMenuOpen}
+          className="lg:hidden"
+        >
           <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-blue-100 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
             <div className="flex items-center justify-between">
               <Link href="/" className="-m-1.5 p-1.5">
@@ -170,7 +198,11 @@ export default function AnalysisPage() {
               <div className="-my-6 divide-y divide-gray-500/10">
                 <div className="space-y-2 py-6">
                   {navigation.map((item) => (
-                    <Link key={item.name} href={item.href} className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-gray-50">
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-gray-50"
+                    >
                       {item.name}
                     </Link>
                   ))}
@@ -188,46 +220,45 @@ export default function AnalysisPage() {
           <CardDescription>See all your medicines here</CardDescription>
         </CardHeader>
         <CardContent className="flex-1 pb-0">
-          <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[250px]">
-          <RadialBarChart 
-  width={300} 
-  height={300}
-  innerRadius="40%" 
-  outerRadius="80%" 
-  barSize={10} // Adjust bar thickness
-  data={chartData}
-  startAngle={90} 
-  endAngle={-270} 
-  
->
-  {/* Ensure tooltips work correctly */}
-  <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel nameKey="name" />} />
+          <ChartContainer
+            config={chartConfig}
+            className="mx-auto aspect-square max-h-[250px]"
+          >
+            <RadialBarChart
+              width={300}
+              height={300}
+              innerRadius="40%"
+              outerRadius="80%"
+              barSize={10} // Adjust bar thickness
+              data={chartData}
+              startAngle={90}
+              endAngle={-270}
+            >
+            <Tooltip content={<CustomTooltip />} />
 
-  {/* Add yAxis to explicitly define the domain */}
-  {/* <YAxis type="number" domain={[0, 100]} hide /> */}
+              
 
-  <RadialBar 
-    minAngle={15} 
-    background={{ fill: "#eee" }} // Gray background ring for reference
-    dataKey="adherence"
-    cornerRadius={5} 
-    fill={(entry) => entry.fill}
-  >
-    <LabelList 
-      position="insideStart" 
-      dataKey="name" 
-      className="fill-black font-bold capitalize mix-blend-luminosity" 
-      fontSize={11} 
-    />
-  </RadialBar>
-</RadialBarChart>
-
-
-
+              <RadialBar
+                minAngle={15}
+                background={{ fill: "#eee" }} // Gray background ring for reference
+                dataKey="adherence"
+                cornerRadius={5}
+                fill={(entry) => entry.fill}
+              >
+                <LabelList
+                  position="insideStart"
+                  dataKey="name"
+                  className="fill-black font-bold capitalize mix-blend-luminosity"
+                  fontSize={11}
+                />
+              </RadialBar>
+            </RadialBarChart>
           </ChartContainer>
         </CardContent>
         <CardFooter className="text-sm">
-          <div className="leading-none text-muted-foreground">Adherence percentage of prescribed medicines</div>
+          <div className="leading-none text-muted-foreground">
+            Adherence percentage of prescribed medicines
+          </div>
         </CardFooter>
       </Card>
     </div>

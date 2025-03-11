@@ -89,7 +89,7 @@ export default function AddPrescription() {
       return;
     }
 
-    setTotal((Number(duration))*Number(frequency))
+    const calculatedTotal = Number(duration) * Number(frequency);
     setMedicines([
       ...medicines,
       {
@@ -99,7 +99,7 @@ export default function AddPrescription() {
         timeOfDay: timeOfDayArr,
         duration,
         taken,
-        total,
+        total: calculatedTotal,
         days,
         instructions,
       },
@@ -168,8 +168,9 @@ export default function AddPrescription() {
       setLoading(false);
     }
   };
+  
 
-  // Rest of the header/navigation code remains the same until the form...
+ 
 
   return (
     <div className="pt-40">
