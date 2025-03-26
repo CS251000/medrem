@@ -8,13 +8,13 @@ import { getFirestore } from "firebase/firestore";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyBMMea72w-8Kkzdqz1hLGrDvNM6YdvqmnA",
-  authDomain: "medicare-41af1.firebaseapp.com",
-  projectId: "medicare-41af1",
-  storageBucket: "medicare-41af1.firebasestorage.app",
-  messagingSenderId: "383297468290",
-  appId: "1:383297468290:web:c4b8a0bec80b86ddec019b",
-  measurementId: "G-5M70YNSK3N"
+  apiKey: "AIzaSyDQV5dab2vwU1rdlxsfaSMTDtfgP0kOP2Q",
+  authDomain: "medrem-fbcb0.firebaseapp.com",
+  projectId: "medrem-fbcb0",
+  storageBucket: "medrem-fbcb0.firebasestorage.app",
+  messagingSenderId: "954226199500",
+  appId: "1:954226199500:web:6c134554da50db66dd6b69",
+  measurementId: "G-XW9DFRX8H7"
 };
 
 // Initialize Firebase
