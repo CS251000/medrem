@@ -151,7 +151,7 @@ export default function Home() {
 
               {isSignedIn ? (
                 <Link
-                  href={`/pillbox/${userId}`}
+                  href={`/pillbox`}
                   className="text-md font-semibold text-blue-700"
                 >
                   Go to PillBox <span aria-hidden="true">→</span>

@@ -38,6 +38,7 @@ export default function AddPrescription() {
   const [duration, setDuration] = useState("");
   const [total,setTotal]= useState(1)
   const [taken,setTaken]= useState(0);
+  const[schedule,setSchedule]= useState({});
   // const [startDate, setStartDate] = useState("");
   // const [endDate, setEndDate] = useState("");   
   const [start_end_date,setStartEndDate]=useState({
@@ -49,6 +50,29 @@ export default function AddPrescription() {
   const [doctorContact, setDoctorContact] = useState("");
   const [loading, setLoading] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const generateMedicineSchedule = (startDate, duration) => {
+    const schedule = {};
+    let currentDate = new Date(startDate);
+  
+    for (let i = 0; i < duration; i++) {
+      const formattedDate = currentDate.toISOString().split("T")[0];
+  
+      schedule[formattedDate] = {
+        morning: { isTaken: false },
+        noon: { isTaken: false },
+        evening: { isTaken: false },
+        night: { isTaken: false }
+      };
+  
+      // Move to next day
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+  
+    return schedule;
+  };
+  
+  
 
   const toggleDay = (day) => {
     setDays((prevDays) =>
@@ -90,10 +114,13 @@ export default function AddPrescription() {
     }
 
     const calculatedTotal = Number(duration) * Number(frequency);
+    const medicineSchedule = generateMedicineSchedule(start_end_date.from,Number(duration));
+    
     setMedicines([
       ...medicines,
       {
         medicineName,
+        medicineSchedule,
         dosage,
         frequency,
         timeOfDay: timeOfDayArr,

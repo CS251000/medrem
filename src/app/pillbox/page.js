@@ -123,56 +123,21 @@ export default function PillBox() {
       if (med.medicineName === medicine.medicineName) {
         return {
           ...med,
-          takendates: {
-            ...med.takendates,
+          medicineSchedule: {
+            ...med.medicineSchedule,
             [day]: {
-              ...med.takendates?.[day],
-              [time]: !med.takendates?.[day]?.[time],
+              ...med.medicineSchedule[day],
+              [time]: { isTaken: true }, 
             },
           },
-          
         };
       }
       return med;
     });
   
     setMedicines(updatedMedicines);
-  
-    try {
-      const prescriptionsRef = collection(db, "prescriptions");
-      const q = query(
-        prescriptionsRef,
-        where("userId", "==", userId)
-      );
-      const querySnapshot = await getDocs(q);
-  
-      querySnapshot.forEach(async (doc) => {
-        const data = doc.data();
-        const updatedMedicineList = data.medicines.map((med) => {
-          if (med.medicineName === medicine.medicineName) {
-            med.taken++;
-            return {
-              ...med,
-              takendates: {
-                ...med.takendates,
-                [day]: {
-                  ...med.takendates?.[day],
-                  [time]: !med.takendates?.[day]?.[time],
-                },
-              },
-            };
-          }
-          return med;
-        });
-  
-        await updateDoc(doc.ref, {
-          medicines: updatedMedicineList,
-        });
-      });
-    } catch (error) {
-      console.error("Error updating medicine status:", error);
-    }
   };
+  
   
   if (loading) {
     return <p>Loading medicines...</p>;
